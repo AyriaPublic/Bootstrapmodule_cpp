@@ -53,6 +53,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
+	<Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
@@ -176,7 +177,13 @@
     <ClCompile Include="Source\Utility\Binary\Patternscan.cpp" />
     <ClCompile Include="Source\Utility\Data\Bytebuffer.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <MASM Include="Source\Bootstrap\Resumeprogram.asm">
+      <ExcludedFromBuild Condition="'$(Platform)'!='x64'">true</ExcludedFromBuild>
+    </MASM>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+	<Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
   </ImportGroup>
 </Project>

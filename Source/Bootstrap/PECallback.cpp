@@ -14,8 +14,8 @@
 #include <intrin.h>
 
 // Global scope to be accessible from ASM.
+extern "C" size_t Entrypoint{};
 uint8_t Originaltext[20]{};
-size_t Entrypoint{};
 void Callback();
 
 // Access to external modules.

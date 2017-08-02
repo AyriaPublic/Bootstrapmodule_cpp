@@ -8,6 +8,7 @@
 
 #pragma once
 #include "../../Stdinclude.h"
+#pragma warning (disable : 4840)
 
 inline std::string va(std::string Format, ...)
 {
