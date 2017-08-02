@@ -60,4 +60,8 @@ void RestoreTLS()
 // Delay TLS calls on startup.
 namespace { struct DelayTLS { DelayTLS() { RemoveTLS(); } }; static DelayTLS Delay{}; }
 
+#else
+
+void RestoreTLS() {}
+
 #endif

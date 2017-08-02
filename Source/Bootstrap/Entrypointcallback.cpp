@@ -4,13 +4,9 @@
     License: MIT
     Notes:
         Inserts a hook on the games entrypoint.
-        Windows only, although .NET is PE.
 */
 
 #include "../Stdinclude.h"
-
-#if defined (_WIN32)
-#include <Windows.h>
 
 // Global scope to be accessable from ASM.
 uint8_t Originaltext[20]{};
@@ -22,18 +18,8 @@ extern "C" void Resumeprogram();
 extern void Loadallplugins();
 extern void RestoreTLS();
 
-// Windows x64 defines this in a .asm file.
-#if defined (ENVIRONMENT64)
-extern "C" void Resumeprogram()
-{
-    // Clang and CL does not want to cooperate here.
-    #if defined (__clang__)
-        *((size_t*)__builtin_frame_address(0) + 1) = Entrypoint);
-    #else
-        *(size_t *)_AddressOfReturnAddress() = Entrypoint);
-    #endif
-}
-#endif
+#if defined (_WIN32)
+#include <Windows.h>
 
 // Get the games entrypoint.
 size_t Getentrypoint()
@@ -49,13 +35,39 @@ size_t Getentrypoint()
     return (size_t)((DWORD_PTR)Modulehandle + NTHeader->OptionalHeader.AddressOfEntryPoint);
 }
 
+// Windows x64 defines this in a .asm file.
+#if defined (ENVIRONMENT64)
+extern "C" void Resumeprogram()
+{
+    // Clang and CL does not want to cooperate here.
+    #if defined (__clang__)
+        *((size_t*)__builtin_frame_address(0) + 1) = Entrypoint);
+    #else
+        *(size_t *)_AddressOfReturnAddress() = Entrypoint);
+    #endif
+}
+#endif
+
+#else
+
+// Get the games entrypoint.
+size_t Getentrypoint()
+{
+    return 0;
+}
+extern "C" void Resumeprogram()
+{
+    asm volatile ("jmp *%0" :: "r"(Entrypoint));
+}
+#endif
+
 // Overwrite and restore the entrypoint.
 void Removeentrypoint()
 {
     Entrypoint = Getentrypoint();
     if(!Entrypoint) return;
 
-    auto Protection = Memprotect::Unprotectrange(Entrypoint, 20);
+    auto Protection = Memprotect::Unprotectrange((void *)Entrypoint, 20);
     {
         // Take a backup of the text segment.
         std::memcpy(Originaltext, (void *)Entrypoint, 20);
@@ -72,18 +84,18 @@ void Removeentrypoint()
             *(uint32_t *)(Entrypoint + 1) = ((uint32_t)Callback - (Entrypoint + 5));
         #endif
     }
-    Memprotect::Protectrange(Entrypoint, 20, Protection);
+    Memprotect::Protectrange((void *)Entrypoint, 20, Protection);
 }
 void Restoreentrypoint()
 {
     if(!Entrypoint) return;
 
-    auto Protection = Memprotect::Unprotectrange(Entrypoint, 20);
+    auto Protection = Memprotect::Unprotectrange((void *)Entrypoint, 20);
     {
         // Restore the text segment.
         std::memcpy((void *)Entrypoint, Originaltext, 20);
     }
-    Memprotect::Protectrange(Entrypoint, 20, Protection);
+    Memprotect::Protectrange((void *)Entrypoint, 20, Protection);
 }
 
 // The callback from the games entrypoint.
@@ -102,5 +114,3 @@ void Callback()
 
 // Install the hook on startup.
 namespace { struct Overwriteentrypoint { Overwriteentrypoint() { Removeentrypoint(); }; }; static Overwriteentrypoint Loader{}; }
-
-#endif
