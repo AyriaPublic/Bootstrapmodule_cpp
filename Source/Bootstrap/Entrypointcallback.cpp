@@ -26,7 +26,7 @@ size_t Getentrypoint()
 {
     // Module(NULL) gets the host application.
     HMODULE Modulehandle = GetModuleHandleA(NULL);
-    if(!Module) return 0;
+    if(!Modulehandle) return 0;
 
     // Traverse the PE header.
     PIMAGE_DOS_HEADER DOSHeader = (PIMAGE_DOS_HEADER)Modulehandle;
@@ -49,11 +49,16 @@ extern "C" void Resumeprogram()
 #endif
 
 #else
+#include <dlfcn.h>
 
 // Get the games entrypoint.
 size_t Getentrypoint()
 {
-    return 0;
+    // dlopen(NULL) gets the host application.
+    void *Modulehandle = dlopen(NULL, RTLD_LAZY);
+    if(!Modulehandle) return 0;
+
+    return size_t(Modulehandle) + *(size_t *)(size_t(Modulehandle) + 0x18);
 }
 extern "C" void Resumeprogram()
 {
