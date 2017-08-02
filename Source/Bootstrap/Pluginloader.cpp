@@ -189,15 +189,7 @@ bool Findfiles(std::string Searchpath, std::vector<std::string> *Filenames)
 {
     struct stat Fileinfo;
     dirent *Filedata;
-    std::string Path;
     DIR *Filehandle;
-
-    // Append trailing slash, asterisk and extension.
-    if (Searchpath.back() != '/') Searchpath.append("/");
-    Path = Searchpath;
-    Searchpath.append("*");
-    Searchpath.append(".");
-    Searchpath.append(Pluginextension);
 
     // Iterate through the directory.
     Filehandle = opendir(Searchpath.c_str());
@@ -208,11 +200,11 @@ bool Findfiles(std::string Searchpath, std::vector<std::string> *Filenames)
             continue;
 
         // Get extended fileinfo.
-        std::string Filepath = Path + "/" + Filedata->d_name;
+        std::string Filepath = Searchpath + "/" + Filedata->d_name;
         if (stat(Filepath.c_str(), &Fileinfo) == -1) continue;
 
         // Add the file to the list.
-        if (!(Fileinfo.st_mode & S_IFDIR))
+        if (!(Fileinfo.st_mode & S_IFDIR) && std::strstr(Filedata->d_name, Pluginextension))
             Filenames->push_back(Filedata->d_name);
     }
     closedir(Filehandle);
