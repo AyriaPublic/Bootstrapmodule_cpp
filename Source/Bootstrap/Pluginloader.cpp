@@ -90,6 +90,7 @@ extern "C"
         }
 
         Loadplugin(Pluginname);
+        Initializeplugins();
     }
 }
 
