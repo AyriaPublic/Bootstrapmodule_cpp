@@ -62,7 +62,7 @@ namespace Base64
         {
             if(Item == '=') continue;
 
-            Accumulator = (Accumulator << 6) | Internal::Reversetable[Item];
+            Accumulator = (Accumulator << 6) | Internal::Reversetable[uint8_t(Item)];
             Bits += 6;
 
             if(Bits >= 8)

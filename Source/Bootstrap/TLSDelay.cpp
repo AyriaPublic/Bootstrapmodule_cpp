@@ -21,7 +21,7 @@ size_t GetTLSCallback()
 {
     // Module(NULL) gets the host application.
     HMODULE Modulehandle = GetModuleHandleA(NULL);
-    if(!Module) return 0;
+    if(!Modulehandle) return 0;
 
     // Traverse the PE header.
     PIMAGE_DOS_HEADER DOSHeader = (PIMAGE_DOS_HEADER)Modulehandle;
@@ -53,7 +53,7 @@ void RestoreTLS()
     if(!Address) return;
 
     // Create a new thread to invoke TLS.
-    *(size_t *)Address = OriginalTLS();
+    *(size_t *)Address = OriginalTLS;
     std::thread([]() { return 0; }).detach();
 }
 

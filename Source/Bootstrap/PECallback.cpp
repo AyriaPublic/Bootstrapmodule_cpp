@@ -11,8 +11,9 @@
 
 #if defined (_WIN32)
 #include <Windows.h>
+#include <intrin.h>
 
-// Global scope to be accessable from ASM.
+// Global scope to be accessible from ASM.
 uint8_t Originaltext[20]{};
 size_t Entrypoint{};
 void Callback();
@@ -36,15 +37,56 @@ size_t Getentrypoint()
     return (size_t)((DWORD_PTR)Modulehandle + NTHeader->OptionalHeader.AddressOfEntryPoint);
 }
 
+// Overwrite and restore the entrypoint.
+void Removeentrypoint()
+{
+    Printfunction();
+
+    Entrypoint = Getentrypoint();
+    if(!Entrypoint) return;
+
+    auto Protection = Memprotect::Unprotectrange((void *)Entrypoint, 20);
+    {
+        // Take a backup of the text segment.
+        std::memcpy(Originaltext, (void *)Entrypoint, 20);
+
+        // Per architecture patching.
+        #if defined (ENVIRONMENT64)
+            *(uint8_t *)(Entrypoint + 0) = 0x48;                   // mov
+            *(uint8_t *)(Entrypoint + 1) = 0xB8;                   // rax
+            *(uint64_t *)(Entrypoint + 2) = (uint64_t)Callback;    // Address
+            *(uint8_t *)(Entrypoint + 10) = 0xFF;                  // jmp reg
+            *(uint8_t *)(Entrypoint + 11) = 0xE0;                  // rax
+        #else
+            *(uint8_t *)(Entrypoint + 0) = 0xE9;                   // jmp
+            *(uint32_t *)(Entrypoint + 1) = ((uint32_t)Callback - (Entrypoint + 5));
+        #endif
+    }
+    Memprotect::Protectrange((void *)Entrypoint, 20, Protection);
+}
+void Restoreentrypoint()
+{
+    if(!Entrypoint) return;
+
+    auto Protection = Memprotect::Unprotectrange((void *)Entrypoint, 20);
+    {
+        // Restore the text segment.
+        std::memcpy((void *)Entrypoint, Originaltext, 20);
+    }
+    Memprotect::Protectrange((void *)Entrypoint, 20, Protection);
+
+    Printfunction();
+}
+
 // Windows x64 defines this in a .asm file.
-#if defined (ENVIRONMENT64)
+#if !defined (ENVIRONMENT64)
 extern "C" void Resumeprogram()
 {
     // Clang and CL does not want to cooperate here.
     #if defined (__clang__)
-        *((size_t*)__builtin_frame_address(0) + 1) = Entrypoint);
+        *((size_t*)__builtin_frame_address(0) + 1) = Entrypoint;
     #else
-        *(size_t *)_AddressOfReturnAddress() = Entrypoint);
+        *(size_t *)_AddressOfReturnAddress() = Entrypoint;
     #endif
 }
 #endif

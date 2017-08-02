@@ -122,7 +122,7 @@ void Loadallplugins()
 
 void Freelibrary(void *Libraryhandle)
 {
-    FreeLibrary(Libraryhandle);
+    FreeLibrary(HMODULE(Libraryhandle));
 }
 void *Loadlibrary(std::string Libraryname)
 {
