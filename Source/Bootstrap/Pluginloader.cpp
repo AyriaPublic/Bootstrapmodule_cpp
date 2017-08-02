@@ -197,7 +197,7 @@ bool Findfiles(std::string Searchpath, std::vector<std::string> *Filenames)
     Path = Searchpath;
     Searchpath.append("*");
     Searchpath.append(".");
-    Searchpath.append(Pluginextension );
+    Searchpath.append(Pluginextension);
 
     // Iterate through the directory.
     Filehandle = opendir(Searchpath.c_str());
