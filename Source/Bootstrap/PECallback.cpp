@@ -41,6 +41,7 @@ size_t Getentrypoint()
 void Removeentrypoint()
 {
     Printfunction();
+    MessageBoxA(0, 0, 0, 0);
 
     Entrypoint = Getentrypoint();
     if(!Entrypoint) return;
@@ -66,6 +67,7 @@ void Removeentrypoint()
 }
 void Restoreentrypoint()
 {
+    Printfunction();
     if(!Entrypoint) return;
 
     auto Protection = Memprotect::Unprotectrange((void *)Entrypoint, 20);
@@ -74,14 +76,14 @@ void Restoreentrypoint()
         std::memcpy((void *)Entrypoint, Originaltext, 20);
     }
     Memprotect::Protectrange((void *)Entrypoint, 20, Protection);
-
-    Printfunction();
 }
 
 // Windows x64 defines this in a .asm file.
 #if !defined (ENVIRONMENT64)
 extern "C" void Resumeprogram()
 {
+    Printfunction();
+
     // Clang and CL does not want to cooperate here.
     #if defined (__clang__)
         *((size_t*)__builtin_frame_address(0) + 1) = Entrypoint;

@@ -53,7 +53,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
-	<Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
@@ -76,7 +76,7 @@
     <TargetExt>.dll</TargetExt>
     <UseMultiToolTask>true</UseMultiToolTask>
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>Nativebootstrap$(PlatformArchitecture))</TargetName>
+    <TargetName>Nativebootstrap$(PlatformArchitecture)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(ProjectDir)Bin\</OutDir>
@@ -84,7 +84,7 @@
     <TargetExt>.dll</TargetExt>
     <UseMultiToolTask>true</UseMultiToolTask>
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>Nativebootstrap$(PlatformArchitecture))</TargetName>
+    <TargetName>Nativebootstrap$(PlatformArchitecture)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(ProjectDir)Bin\</OutDir>
@@ -92,7 +92,7 @@
     <TargetExt>.dll</TargetExt>
     <UseMultiToolTask>true</UseMultiToolTask>
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>Nativebootstrap$(PlatformArchitecture))</TargetName>
+    <TargetName>Nativebootstrap$(PlatformArchitecture)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(ProjectDir)Bin\</OutDir>
@@ -100,7 +100,7 @@
     <TargetExt>.dll</TargetExt>
     <UseMultiToolTask>true</UseMultiToolTask>
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>Nativebootstrap$(PlatformArchitecture))</TargetName>
+    <TargetName>Nativebootstrap$(PlatformArchitecture)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -184,6 +184,6 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-	<Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
   </ImportGroup>
 </Project>
