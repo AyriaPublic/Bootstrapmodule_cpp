@@ -24,12 +24,15 @@ unsigned long Memprotect::Unprotectrange(void *Address, const size_t Length)
 }
 
 #else
+#include <unistd.h>
+#include <sys/mman.h>
 
 // *nix version of the memoryprotection.
-#include <sys/mman.h>
 void Memprotect::Protectrange(void *Address, const size_t Length, unsigned long Oldprotection)
 {
-    mprotect(Address, Length, Oldprotection);
+    int Pagesize = getpagesize();
+    Address -= size_t(Address) % Pagesize;
+    mprotect(Address, Pagesize, Oldprotection);
 }
 unsigned long Memprotect::Unprotectrange(void *Address, const size_t Length)
 {
@@ -44,7 +47,7 @@ unsigned long Memprotect::Unprotectrange(void *Address, const size_t Length)
 
         while(std::fgets(Buffer, 1024, Filehandle))
         {
-            std::scanf("%lx-%lx %4s %lx %5s %ld %s", &Start, &End, Permissions, &Foo, Device, &Node, Mapname);
+            std::sscanf(Buffer, "%lx-%lx %4s %lx %5s %ld %s", &Start, &End, Permissions, &Foo, Device, &Node, Mapname);
 
             if(Start <= (unsigned long)Address || End >= (unsigned long)Address)
             {
@@ -62,7 +65,9 @@ unsigned long Memprotect::Unprotectrange(void *Address, const size_t Length)
     }
 
     // Write the new protection.
-    mprotect(Address, Length, (PROT_READ | PROT_WRITE | PROT_EXEC));
+    int Pagesize = getpagesize();
+    Address -= size_t(Address) % Pagesize;
+    mprotect(Address, Pagesize, PROT_READ | PROT_WRITE | PROT_EXEC);
     return Oldprotection;
 }
 #endif

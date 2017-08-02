@@ -58,7 +58,8 @@ size_t Getentrypoint()
     void *Modulehandle = dlopen(NULL, RTLD_LAZY);
     if(!Modulehandle) return 0;
 
-    return size_t(Modulehandle) + *(size_t *)(size_t(Modulehandle) + 0x18);
+    size_t Modulebase = *(size_t *)(size_t(Modulehandle));
+    return size_t(Modulebase) + *(size_t *)(size_t(Modulebase) + 0x18);
 }
 extern "C" void Resumeprogram()
 {
