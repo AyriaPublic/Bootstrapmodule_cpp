@@ -241,7 +241,7 @@ bool Findfiles(std::string Searchpath, std::vector<std::string> *Filenames)
         if (stat(Filepath.c_str(), &Fileinfo) == -1) continue;
 
         // Add the file to the list.
-        if (!(Fileinfo.st_mode & S_IFDIR) && std::strstr(Filedata->d_name, "ayria"))
+        if (!(Fileinfo.st_mode & S_IFDIR) && std::strstr(Filedata->d_name, ".ayria"))
             Filenames->push_back(Filedata->d_name);
     }
     closedir(Filehandle);
