@@ -13,10 +13,12 @@
 
 // Includes for standard libraries.
 #include <unordered_map>
+#include <algorithm>
 #include <cstdint>
 #include <cstdlib>
 #include <cstdarg>
 #include <cstring>
+#include <fstream>
 #include <cstdio>
 #include <vector>
 #include <memory>
@@ -33,6 +35,7 @@
 #include "Utility/Text/Variadicstring.h"
 #include "Utility/Binary/Patternscan.h"
 #include "Utility/Binary/Memprotect.h"
+#include "Utility/Data/Ayriapackage.h"
 #include "Utility/Data/Bytebuffer.h"
 #include "Utility/Binary/Hooking.h"
 #include "Utility/Text/Logfile.h"
