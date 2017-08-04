@@ -14,7 +14,7 @@ bool Reserved = false;
 // Global state for the plugins.
 std::vector<void * /* Pluginhandle */> Freshplugins;
 std::unordered_map<std::string /* Pluginname */, void * /* Pluginhandle */> Pluginmap;
-constexpr const char *Pluginextension = sizeof(void *) == sizeof(uint64_t) ? "ayria64" : "ayria";
+constexpr const char *Pluginextension = sizeof(void *) == sizeof(uint64_t) ? "ayria64" : "ayria32";
 
 // Wrappers for platform functionality.
 std::string Temporarydir();
