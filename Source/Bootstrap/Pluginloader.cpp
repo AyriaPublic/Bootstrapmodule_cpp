@@ -14,9 +14,10 @@ bool Reserved = false;
 // Global state for the plugins.
 std::vector<void * /* Pluginhandle */> Freshplugins;
 std::unordered_map<std::string /* Pluginname */, void * /* Pluginhandle */> Pluginmap;
-constexpr const char *Pluginextension = sizeof(void *) == sizeof(uint64_t) ? "ayria64" : "ayria32";
+constexpr const char *Pluginextension = sizeof(void *) == sizeof(uint64_t) ? "ayria64" : "ayria";
 
 // Wrappers for platform functionality.
+std::string Temporarydir();
 void Freelibrary(void *Libraryhandle);
 void *Loadlibrary(std::string Libraryname);
 void *Getfunction(void *Libraryhandle, std::string Functionname);
@@ -35,10 +36,8 @@ void Initializeplugins()
 }
 
 // Load a plugin into the game.
-void Loadplugin(const char *Pluginname)
+void Loadplugin(const char *Pluginname, const char *Fullpath)
 {
-    std::string Fullpath = std::string("./Plugins/") + Pluginname;
-
     /*
         TODO(Convery):
         At this point we should verify the digital signature
@@ -89,7 +88,8 @@ extern "C"
             }
         }
 
-        Loadplugin(Pluginname);
+        std::string Path = std::string("./") + Pluginname;
+        Loadplugin(Pluginname, Path.c_str());
         Initializeplugins();
     }
 }
@@ -104,7 +104,22 @@ void Loadallplugins()
     {
         for(auto &Item : Filenames)
         {
-            Loadplugin(Item.c_str());
+            auto Collection = Ayriapackage::Readarchive("./Plugins/" + Item);
+            auto Plugin = Ayriapackage::Find(Pluginextension, Collection);
+            if(!Plugin) continue;
+
+            // Temporary storage.
+            auto Path = Temporarydir() + "/" + Plugin->first;
+            std::remove(Path.c_str());
+
+            // Write to disk.
+            std::FILE *Filehandle = std::fopen(Path.c_str(), "wb");
+            if(!Filehandle) continue;
+            std::fwrite(Plugin->second.data(), Plugin->second.size(), 1, Filehandle);
+            std::fclose(Filehandle);
+
+            // Load the plugin from temp storage.
+            Loadplugin(Plugin->first.c_str(), Path.c_str());
         }
     }
 
@@ -120,6 +135,12 @@ void Loadallplugins()
 #include <Windows.h>
 #include <direct.h>
 
+std::string Temporarydir()
+{
+    char Buffer[1024]{};
+    GetTempPathA(1024, Buffer);
+    return { Buffer };
+}
 void Freelibrary(void *Libraryhandle)
 {
     FreeLibrary(HMODULE(Libraryhandle));
@@ -141,7 +162,7 @@ bool Findfiles(std::string Searchpath, std::vector<std::string> *Filenames)
     if (Searchpath.back() != '/') Searchpath.append("/");
     Searchpath.append("*");
     Searchpath.append(".");
-    Searchpath.append(Pluginextension);
+    Searchpath.append("ayria");
 
     // Find the first plugin.
     Filehandle = FindFirstFileA(Searchpath.c_str(), &Filedata);
@@ -173,6 +194,22 @@ bool Findfiles(std::string Searchpath, std::vector<std::string> *Filenames)
 #include <dirent.h>
 #include <dlfcn.h>
 
+std::string Temporarydir()
+{
+    auto Folder = getenv("TMPDIR");
+    if(Folder) return { Folder };
+
+    Folder = getenv("TMP");
+    if(Folder) return { Folder };
+
+    Folder = getenv("TEMP");
+    if(Folder) return { Folder };
+
+    Folder = getenv("TEMPDIR");
+    if(Folder) return { Folder };
+
+    return "/tmp";
+}
 void Freelibrary(void *Libraryhandle)
 {
     dlclose(Libraryhandle);
@@ -204,7 +241,7 @@ bool Findfiles(std::string Searchpath, std::vector<std::string> *Filenames)
         if (stat(Filepath.c_str(), &Fileinfo) == -1) continue;
 
         // Add the file to the list.
-        if (!(Fileinfo.st_mode & S_IFDIR) && std::strstr(Filedata->d_name, Pluginextension))
+        if (!(Fileinfo.st_mode & S_IFDIR) && std::strstr(Filedata->d_name, "ayria"))
             Filenames->push_back(Filedata->d_name);
     }
     closedir(Filehandle);
