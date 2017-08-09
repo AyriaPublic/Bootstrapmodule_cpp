@@ -160,9 +160,7 @@ bool Findfiles(std::string Searchpath, std::vector<std::string> *Filenames)
 
     // Append trailing slash, asterisk and extension.
     if (Searchpath.back() != '/') Searchpath.append("/");
-    Searchpath.append("*");
-    Searchpath.append(".");
-    Searchpath.append("ayria");
+    Searchpath.append("*.Ayria");
 
     // Find the first plugin.
     Filehandle = FindFirstFileA(Searchpath.c_str(), &Filedata);
@@ -241,7 +239,7 @@ bool Findfiles(std::string Searchpath, std::vector<std::string> *Filenames)
         if (stat(Filepath.c_str(), &Fileinfo) == -1) continue;
 
         // Add the file to the list.
-        if (!(Fileinfo.st_mode & S_IFDIR) && std::strstr(Filedata->d_name, ".ayria"))
+        if (!(Fileinfo.st_mode & S_IFDIR) && std::strstr(Filedata->d_name, ".Ayria"))
             Filenames->push_back(Filedata->d_name);
     }
     closedir(Filehandle);
