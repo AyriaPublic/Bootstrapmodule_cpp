@@ -102,6 +102,8 @@ void Loadallplugins()
     // Find all plugins in the folder.
     if(Findfiles("./Plugins/", &Filenames))
     {
+        Infoprint(va("Found %i plugins.", Filenames.size()));
+
         for(auto &Item : Filenames)
         {
             auto Collection = Ayriapackage::Readarchive("./Plugins/" + Item);
@@ -214,7 +216,7 @@ void Freelibrary(void *Libraryhandle)
 }
 void *Loadlibrary(std::string Libraryname)
 {
-    return dlopen(Libraryname.c_str(), RTLD_LAZY);
+    return dlopen(Libraryname.c_str(), RTLD_LOCAL);
 }
 void *Getfunction(void *Libraryhandle, std::string Functionname)
 {
