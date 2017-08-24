@@ -60,8 +60,11 @@ namespace Ayriapackage
 
                 // Read the rest of the entry.
                 Entry Localentry;
-                Localentry.first = std::string(Iterator, Entryheader.Filenamelength); Iterator += Entryheader.Filenamelength;
-                Localentry.second = std::string(Iterator, Entryheader.Compressedsize); Iterator += Entryheader.Compressedsize;
+                Localentry.first = std::string(Iterator, Entryheader.Filenamelength);
+                Iterator += Entryheader.Filenamelength;
+                Iterator += Entryheader.Extralength;
+                Localentry.second = std::string(Iterator, Entryheader.Compressedsize);
+                Iterator += Entryheader.Compressedsize;
                 std::transform(Localentry.first.begin(), Localentry.first.end(), Localentry.first.begin(), tolower);
                 Collection.push_back(Localentry);
             }
