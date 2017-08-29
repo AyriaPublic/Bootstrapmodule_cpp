@@ -26,6 +26,8 @@ bool Findfiles(std::string Searchpath, std::vector<std::string> *Filenames);
 // Initialize all new plugins at once.
 void Initializeplugins()
 {
+    Printfunction();
+
     for (auto &Item : Freshplugins)
     {
         auto Callback = Getfunction(Item, "onInitializationStart");
@@ -52,6 +54,10 @@ void Loadplugin(const char *Pluginname, const char *Fullpath)
         Freshplugins.push_back(Libraryhandle);
         Pluginmap[Pluginname] = Libraryhandle;
         Infoprint(va("Loaded plugin \"%s\".", Pluginname));
+    }
+    else
+    {
+        Infoprint(va("Failed to load plugin \"%s\".", Pluginname));
     }
 }
 
@@ -216,7 +222,7 @@ void Freelibrary(void *Libraryhandle)
 }
 void *Loadlibrary(std::string Libraryname)
 {
-    return dlopen(Libraryname.c_str(), RTLD_LOCAL);
+    return dlopen(Libraryname.c_str(), RTLD_LAZY);
 }
 void *Getfunction(void *Libraryhandle, std::string Functionname)
 {

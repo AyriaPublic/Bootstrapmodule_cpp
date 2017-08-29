@@ -8,8 +8,10 @@
 
 #include "Stdinclude.h"
 
-// Delete the last sessions log on startup.
-namespace { struct Deletelog { Deletelog() { Clearlog(); } }; static Deletelog Deleted{}; }
+// Delete the last sessions log on startup for windows.
+#if defined (_WIN32)
+    namespace { struct Deletelog { Deletelog() { Clearlog(); } }; static Deletelog Deleted{}; }
+#endif
 
 // Default entrypoint for windows.
 #if defined (_WIN32)
