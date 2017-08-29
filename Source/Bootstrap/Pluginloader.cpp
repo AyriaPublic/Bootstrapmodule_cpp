@@ -132,7 +132,7 @@ void Loadallplugins()
     }
 
     // Sideload a developer plugin if available.
-    Loadplugin("./Plugins/Developerplugin");
+    Loadplugin("Devplugin", "./Plugins/Developerplugin");
 
     // Initialize all new plugins.
     Initializeplugins();
