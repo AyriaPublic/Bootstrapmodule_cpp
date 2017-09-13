@@ -161,6 +161,7 @@
     <ClInclude Include="Source\Utility\Binary\Memprotect.h" />
     <ClInclude Include="Source\Utility\Binary\Patternscan.h" />
     <ClInclude Include="Source\Utility\Cryptography\FNV1Hash.h" />
+    <ClInclude Include="Source\Utility\Data\Ayriapackage.h" />
     <ClInclude Include="Source\Utility\Data\Base64.h" />
     <ClInclude Include="Source\Utility\Data\Bytebuffer.h" />
     <ClInclude Include="Source\Utility\Text\Logfile.h" />
@@ -175,6 +176,7 @@
     <ClCompile Include="Source\Utility\Binary\Hooking.cpp" />
     <ClCompile Include="Source\Utility\Binary\Memprotect.cpp" />
     <ClCompile Include="Source\Utility\Binary\Patternscan.cpp" />
+    <ClCompile Include="Source\Utility\Data\Ayriapackage.cpp" />
     <ClCompile Include="Source\Utility\Data\Bytebuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
