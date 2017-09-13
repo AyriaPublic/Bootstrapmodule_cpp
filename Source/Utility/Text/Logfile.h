@@ -64,5 +64,5 @@ inline void Logtimestamped(std::string Message)
 inline void Clearlog()
 {
     std::remove(Logfileinternal::Outputpath);
-    Logtimestamped("Starting up..");
+    Logtimestamped(MODULENAME " - Starting up..");
 }

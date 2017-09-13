@@ -39,7 +39,6 @@ size_t Getentrypoint()
 void Removeentrypoint()
 {
     Printfunction();
-    MessageBoxA(0, 0, 0, 0);
 
     Entrypoint = Getentrypoint();
     if(!Entrypoint) return;
@@ -109,6 +108,5 @@ void Callback()
 
 // Install the hook on startup.
 namespace { struct Overwriteentrypoint { Overwriteentrypoint() { Removeentrypoint(); }; }; static Overwriteentrypoint Loader{}; }
-
 
 #endif
