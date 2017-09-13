@@ -21,7 +21,6 @@ std::string Temporarydir();
 void Freelibrary(void *Libraryhandle);
 void *Loadlibrary(std::string Libraryname);
 void *Getfunction(void *Libraryhandle, std::string Functionname);
-bool Findfiles(std::string Searchpath, std::vector<std::string> *Filenames);
 
 // Initialize all new plugins at once.
 void Initializeplugins()
@@ -106,7 +105,7 @@ void Loadallplugins()
     std::vector<std::string> Filenames;
 
     // Find all plugins in the folder.
-    if(Findfiles("./Plugins/", &Filenames))
+    if(Findfiles("./Plugins/", &Filenames, Pluginextension))
     {
         Infoprint(va("Found %i plugins.", Filenames.size()));
 
@@ -143,9 +142,6 @@ void Loadallplugins()
 
 // Platform functionality.
 #if defined (_WIN32)
-#include <Windows.h>
-#include <direct.h>
-
 std::string Temporarydir()
 {
     char Buffer[1024]{};
@@ -164,44 +160,8 @@ void *Getfunction(void *Libraryhandle, std::string Functionname)
 {
     return GetProcAddress(HMODULE(Libraryhandle), Functionname.c_str());
 }
-bool Findfiles(std::string Searchpath, std::vector<std::string> *Filenames)
-{
-    WIN32_FIND_DATAA Filedata;
-    HANDLE Filehandle;
-
-    // Append trailing slash, asterisk and extension.
-    if (Searchpath.back() != '/') Searchpath.append("/");
-    Searchpath.append("*.Ayria");
-
-    // Find the first plugin.
-    Filehandle = FindFirstFileA(Searchpath.c_str(), &Filedata);
-    if (Filehandle == (void *)ERROR_INVALID_HANDLE || Filehandle == (void *)INVALID_HANDLE_VALUE)
-    {
-        if(Filehandle) FindClose(Filehandle);
-        return false;
-    }
-
-    do
-    {
-        // Respect hidden files and folders.
-        if (Filedata.cFileName[0] == '.')
-            continue;
-
-        // Add the file to the list.
-        if (!(Filedata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-            Filenames->push_back(Filedata.cFileName);
-
-    } while (FindNextFileA(Filehandle, &Filedata));
-
-    FindClose(Filehandle);
-    return !!Filenames->size();
-}
 
 #else
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <dirent.h>
-#include <dlfcn.h>
 
 std::string Temporarydir()
 {
@@ -230,32 +190,6 @@ void *Loadlibrary(std::string Libraryname)
 void *Getfunction(void *Libraryhandle, std::string Functionname)
 {
     return dlsym(Libraryhandle, Functionname.c_str());
-}
-bool Findfiles(std::string Searchpath, std::vector<std::string> *Filenames)
-{
-    struct stat Fileinfo;
-    dirent *Filedata;
-    DIR *Filehandle;
-
-    // Iterate through the directory.
-    Filehandle = opendir(Searchpath.c_str());
-    while ((Filedata = readdir(Filehandle)))
-    {
-        // Respect hidden files and folders.
-        if (Filedata->d_name[0] == '.')
-            continue;
-
-        // Get extended fileinfo.
-        std::string Filepath = Searchpath + "/" + Filedata->d_name;
-        if (stat(Filepath.c_str(), &Fileinfo) == -1) continue;
-
-        // Add the file to the list.
-        if (!(Fileinfo.st_mode & S_IFDIR) && std::strstr(Filedata->d_name, ".Ayria"))
-            Filenames->push_back(Filedata->d_name);
-    }
-    closedir(Filehandle);
-
-    return !!Filenames->size();
 }
 
 #endif

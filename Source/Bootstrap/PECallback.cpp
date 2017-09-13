@@ -10,8 +10,6 @@
 #include "../Stdinclude.h"
 
 #if defined (_WIN32)
-#include <Windows.h>
-#include <intrin.h>
 
 // Global scope to be accessible from ASM.
 extern "C" size_t Entrypoint{};

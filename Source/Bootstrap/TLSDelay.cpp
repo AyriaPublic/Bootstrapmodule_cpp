@@ -11,7 +11,6 @@
 #include "../Stdinclude.h"
 
 #if defined (_WIN32)
-#include <Windows.h>
 
 // Backup of the TLS callback.
 size_t OriginalTLS{};

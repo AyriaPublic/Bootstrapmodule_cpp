@@ -15,7 +15,6 @@
 
 // Default entrypoint for windows.
 #if defined (_WIN32)
-#include <Windows.h>
 BOOLEAN WINAPI DllMain(HINSTANCE hDllHandle, DWORD nReason, LPVOID Reserved)
 {
     switch (nReason)

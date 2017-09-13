@@ -10,7 +10,6 @@
 #include "../Stdinclude.h"
 
 #if !defined (_WIN32)
-#include <dlfcn.h>
 
 // Global scope to be accessible from ASM.
 int Callback(int (*main) (int, char**, char**), int argc, char **ubp_av, void (*init) (void), void (*fini) (void), void (*rtld_fini) (void), void (*stack_end));

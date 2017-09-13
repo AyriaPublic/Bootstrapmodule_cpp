@@ -10,7 +10,7 @@
 
 // Windows version of the memoryprotection.
 #if defined (_WIN32)
-#include <Windows.h>
+
 void Memprotect::Protectrange(void *Address, const size_t Length, unsigned long Oldprotection)
 {
     unsigned long Temp;
@@ -24,8 +24,6 @@ unsigned long Memprotect::Unprotectrange(void *Address, const size_t Length)
 }
 
 #else
-#include <unistd.h>
-#include <sys/mman.h>
 
 // *nix version of the memoryprotection.
 void Memprotect::Protectrange(void *Address, const size_t Length, unsigned long Oldprotection)

@@ -27,6 +27,22 @@
 #include <mutex>
 #include <ctime>
 
+// Includes for platform libraries.
+#if defined (_WIN32)
+#include <Windows.h>
+#include <direct.h>
+#include <intrin.h>
+#undef min
+#undef max
+#else
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <unistd.h>
+#include <dirent.h>
+#include <dlfcn.h>
+#endif
+
 // Includes for thirdparty libraries.
 /* ... */
 
@@ -38,6 +54,7 @@
 #include "Utility/Data/Ayriapackage.h"
 #include "Utility/Data/Bytebuffer.h"
 #include "Utility/Binary/Hooking.h"
+#include "Utility/Data/SystemIO.h"
 #include "Utility/Text/Logfile.h"
 #include "Utility/Data/Base64.h"
 

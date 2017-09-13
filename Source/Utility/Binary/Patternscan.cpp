@@ -10,7 +10,6 @@
 #include "../../Stdinclude.h"
 
 #if !defined (_WIN32)
-#include <dlfcn.h>
 extern char _etext, _end;
 #endif
 
@@ -20,8 +19,6 @@ namespace Internal
     std::pair<size_t, size_t> Datarange;
 
     #if defined (_WIN32)
-    #include <Windows.h>
-
     struct Rangeinitializer
     {
         Rangeinitializer()
@@ -41,7 +38,7 @@ namespace Internal
     };
 
 #else
-    
+
     struct Rangeinitializer
     {
         Rangeinitializer()

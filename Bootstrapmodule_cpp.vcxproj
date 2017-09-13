@@ -164,6 +164,7 @@
     <ClInclude Include="Source\Utility\Data\Ayriapackage.h" />
     <ClInclude Include="Source\Utility\Data\Base64.h" />
     <ClInclude Include="Source\Utility\Data\Bytebuffer.h" />
+    <ClInclude Include="Source\Utility\Data\SystemIO.h" />
     <ClInclude Include="Source\Utility\Text\Logfile.h" />
     <ClInclude Include="Source\Utility\Text\Variadicstring.h" />
   </ItemGroup>
