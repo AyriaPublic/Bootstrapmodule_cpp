@@ -14,7 +14,11 @@
 // Standard libraries.
 #include <string_view>
 #include <cstdint>
+#include <cstdarg>
+#include <cstdio>
 #include <vector>
+#include <memory>
+#include <chrono>
 
 // Platformspecific libraries.
 #if defined (_WIN32)
@@ -24,6 +28,8 @@
     #undef min
     #undef max
 #else
+    #include <sys/stat.h>
 #endif
 
 // Utility modules.
+#include "Utility/Variadicstring.hpp"
