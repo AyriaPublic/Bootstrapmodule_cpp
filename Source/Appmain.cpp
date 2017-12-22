@@ -16,6 +16,9 @@ BOOLEAN WINAPI DllMain(HINSTANCE hDllHandle, DWORD nReason, LPVOID Reserved)
     _mkdir("./Plugins/");
     _mkdir("./Plugins/Logs/");
 
+    // Clear the previous sessions logfile.
+    Clearlog();
+    
     return TRUE;
 }
 #else
@@ -24,5 +27,8 @@ __attribute__((constructor)) void DllMain()
     // Ensure that the logfile directory exists.
     mkdir("./Plugins/", S_IRWXU | S_IRWXG);
     mkdir("./Plugins/Logs/", S_IRUSR | S_IWUSR);
+
+    // Clear the previous sessions logfile.
+    Clearlog();
 }
 #endif

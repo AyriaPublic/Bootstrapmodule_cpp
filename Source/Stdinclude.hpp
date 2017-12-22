@@ -19,9 +19,12 @@
 #include <vector>
 #include <memory>
 #include <chrono>
+#include <thread>
+#include <string>
+#include <mutex>
 
 // Platformspecific libraries.
-#if defined (_WIN32)
+#if defined(_WIN32)
     #include <Windows.h>
     #include <direct.h>
     #include <intrin.h>
@@ -33,3 +36,4 @@
 
 // Utility modules.
 #include "Utility/Variadicstring.hpp"
+#include "Utility/Logfile.hpp"

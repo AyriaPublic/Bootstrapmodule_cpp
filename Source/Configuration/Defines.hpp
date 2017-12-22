@@ -20,7 +20,7 @@
 #if defined(_MSC_VER)
     #define EXPORT_ATTR __declspec(dllexport)
     #define IMPORT_ATTR __declspec(dllimport)
-#elif defined (__GNUC__)
+#elif defined(__GNUC__)
     #define EXPORT_ATTR __attribute__((visibility("default")))
     #define IMPORT_ATTR
 #else
