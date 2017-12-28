@@ -37,3 +37,6 @@
 // Utility modules.
 #include "Utility/Variadicstring.hpp"
 #include "Utility/Logfile.hpp"
+
+// Components in this project.
+#include "Bootstrapper/Bootstrap.hpp"

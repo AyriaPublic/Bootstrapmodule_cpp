@@ -18,7 +18,10 @@ BOOLEAN WINAPI DllMain(HINSTANCE hDllHandle, DWORD nReason, LPVOID Reserved)
 
     // Clear the previous sessions logfile.
     Clearlog();
-    
+
+    // Remove the TLS callback as it may cause issues.
+    RemoveTLS();
+
     return TRUE;
 }
 #else
