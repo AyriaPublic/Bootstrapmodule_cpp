@@ -10,6 +10,7 @@
 
 // The configuration settings.
 #include "Configuration/Defines.hpp"
+#include "Configuration/Macros.hpp"
 
 // Standard libraries.
 #include <string_view>
@@ -31,7 +32,12 @@
     #undef min
     #undef max
 #else
+    #include <sys/types.h>
     #include <sys/stat.h>
+    #include <sys/mman.h>
+    #include <unistd.h>
+    #include <dirent.h>
+    #include <dlfcn.h>
 #endif
 
 // Utility modules.

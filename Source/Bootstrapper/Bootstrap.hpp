@@ -7,10 +7,6 @@
 #pragma once
 #include "../Stdinclude.hpp"
 
-// Bootstrapper callbacks.
-extern "C" void Resumeexecution();
-void Bootstrapcallback();
-
 #if defined(_WIN32)
 
     // PE file properties.
@@ -21,9 +17,15 @@ void Bootstrapcallback();
     void RemoveTLS();
     void RestoreTLS();
 
+    // Bootstrapping.
+    void InstallPECallback();
+
 #else
 
     // ELF file properties.
     size_t GetELFEntrypoint();
+
+    // Bootstrapping.
+    void InstallELFCallback();
 
 #endif
