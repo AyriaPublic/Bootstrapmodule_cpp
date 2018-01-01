@@ -33,5 +33,8 @@ __attribute__((constructor)) void DllMain()
 
     // Clear the previous sessions logfile.
     Clearlog();
+
+    // Start bootstrapping.
+    InstallELFCallback();
 }
 #endif

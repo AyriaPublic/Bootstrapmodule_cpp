@@ -16,6 +16,7 @@
 #include <string_view>
 #include <cstdint>
 #include <cstdarg>
+#include <cstring>
 #include <cstdio>
 #include <vector>
 #include <memory>
