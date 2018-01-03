@@ -13,6 +13,7 @@
 #include "Configuration/Macros.hpp"
 
 // Standard libraries.
+#include <unordered_map>
 #include <string_view>
 #include <cstdint>
 #include <cstdarg>

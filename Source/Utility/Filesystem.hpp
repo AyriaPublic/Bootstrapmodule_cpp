@@ -43,11 +43,12 @@ inline bool Fileexists(std::string Path)
 
 // List all files in a directory.
 #if defined(_WIN32)
-inline bool Findfiles(std::string Searchpath, std::vector<std::string> *Filenames, std::string Extension)
+inline std::vector<std::string> Findfiles(std::string Searchpath, std::string_view Extension)
 {
+    std::vector<std::string> Filenames{};
     WIN32_FIND_DATAA Filedata;
     HANDLE Filehandle;
-
+    
     // Append trailing slash, asterisk and extension.
     if (Searchpath.back() != '/') Searchpath.append("/");
     Searchpath.append("*");
@@ -69,16 +70,17 @@ inline bool Findfiles(std::string Searchpath, std::vector<std::string> *Filename
 
         // Add the file to the list.
         if (!(Filedata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-            Filenames->push_back(Filedata.cFileName);
+            Filenames.push_back(Filedata.cFileName);
 
     } while (FindNextFileA(Filehandle, &Filedata));
 
     FindClose(Filehandle);
-    return !!Filenames->size();
+    return std::move(Filenames);
 }
 #else
-inline bool Findfiles(std::string Searchpath, std::vector<std::string> *Filenames, std::string Extension)
+inline std::vector<std::string> Findfiles(std::string Searchpath, std::string_view Extension)
 {
+    std::vector<std::string> Filenames{};
     struct stat Fileinfo;
     dirent *Filedata;
     DIR *Filehandle;
@@ -98,13 +100,13 @@ inline bool Findfiles(std::string Searchpath, std::vector<std::string> *Filename
         // Add the file to the list.
         if (!(Fileinfo.st_mode & S_IFDIR))
             if (!Extension.size())
-                Filenames->push_back(Filedata->d_name);
+                Filenames.push_back(Filedata->d_name);
             else
-                if (std::strstr(Filedata->d_name, Extension.c_str()))
-                    Filenames->push_back(Filedata->d_name);
+                if (std::strstr(Filedata->d_name, Extension.data()))
+                    Filenames.push_back(Filedata->d_name);
     }
     closedir(Filehandle);
 
-    return !!Filenames->size();
+    return std::move(Filenames);
 }
 #endif

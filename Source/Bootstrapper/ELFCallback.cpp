@@ -78,7 +78,7 @@ int Callback(int (*main) (int, char**, char**), int argc, char **ubp_av, void (*
     dlopen(Module, RTLD_LAZY);
 
     // Do what we came here for.
-    //Loadallplugins();
+    Loadallplugins();
 
     // Call the original libc.
     auto Libc = reinterpret_cast<int (*) (int (*) (int, char**, char**), int, char **, void (*) (void), void (*) (void), void (*) (void), void (*))>(Entrypoint);

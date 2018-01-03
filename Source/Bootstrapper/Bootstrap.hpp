@@ -7,6 +7,9 @@
 #pragma once
 #include "../Stdinclude.hpp"
 
+// Load all plugins from the default directory.
+void Loadallplugins();
+
 #if defined(_WIN32)
 
     // PE file properties.
