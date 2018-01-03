@@ -38,14 +38,14 @@ void InstallELFCallback()
         std::memcpy(Originaltext, (void *)Entrypoint, 20);
 
         // Per architecture patching.
-        #if defined (ENVIRONMENT64)
-            *(uint8_t *)(Entrypoint + 0) = 0x48;                   // mov
-            *(uint8_t *)(Entrypoint + 1) = 0xB8;                   // rax
-            *(uint64_t *)(Entrypoint + 2) = (uint64_t)Callback;    // Address
-            *(uint8_t *)(Entrypoint + 10) = 0xFF;                  // jmp reg
-            *(uint8_t *)(Entrypoint + 11) = 0xE0;                  // rax
+        #if defined(ENVIRONMENT64)
+            *(uint8_t *)(Entrypoint + 0) = 0x48;                    // mov rax, Callback
+            *(uint8_t *)(Entrypoint + 1) = 0xB8;                    // --
+            *(uint64_t *)(Entrypoint + 2) = (uint64_t)Callback;     // --
+            *(uint8_t *)(Entrypoint + 10) = 0xFF;                   // jmp rax
+            *(uint8_t *)(Entrypoint + 11) = 0xE0;                   // --
         #else
-            *(uint8_t *)(Entrypoint + 0) = 0xE9;                   // jmp
+            *(uint8_t *)(Entrypoint + 0) = 0xE9;                    // jmp short Callack
             *(uint32_t *)(Entrypoint + 1) = ((uint32_t)Callback - (Entrypoint + 5));
         #endif
     }

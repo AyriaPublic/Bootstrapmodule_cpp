@@ -3,7 +3,7 @@
     Started: 22-12-2017
     License: MIT
 
-    A single header for all modules used.
+    A single header for all modules.
 */
 
 #pragma once
@@ -43,6 +43,7 @@
 
 // Utility modules.
 #include "Utility/Variadicstring.hpp"
+#include "Utility/Filesystem.hpp"
 #include "Utility/Memprotect.hpp"
 #include "Utility/Logfile.hpp"
 
