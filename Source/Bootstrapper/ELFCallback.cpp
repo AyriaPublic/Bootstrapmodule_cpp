@@ -73,10 +73,6 @@ int Callback(int (*main) (int, char**, char**), int argc, char **ubp_av, void (*
     // Remove our hackery.
     Restoreentrypoint();
 
-    // Open our module to increase refcount.
-    auto Module = getenv("LD_PRELOAD");
-    dlopen(Module, RTLD_LAZY);
-
     // Do what we came here for.
     Loadallplugins();
 
