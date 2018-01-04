@@ -151,17 +151,17 @@ std::string Temporarydir()
     GetTempPathA(1024, Buffer);
     return std::move(Buffer);
 }
-void Freemodule(void *Libraryhandle)
+void Freemodule(void *Modulehandle)
 {
-    FreeLibrary(HMODULE(Libraryhandle));
+    FreeLibrary(HMODULE(Modulehandle));
 }
-void *Loadmodule(std::string Libraryname)
+void *Loadmodule(std::string_view Modulename)
 {
-    return LoadLibraryA(Libraryname.c_str());
+    return LoadLibraryA(Modulename.data());
 }
-void *Getfunction(void *Libraryhandle, std::string Functionname)
+void *Getfunction(void *Modulehandle, std::string_view Functionname)
 {
-    return GetProcAddress(HMODULE(Libraryhandle), Functionname.c_str());
+    return GetProcAddress(HMODULE(Modulehandle), Functionname.data());
 }
 
 #else
@@ -182,17 +182,17 @@ std::string Temporarydir()
 
     return "/tmp";
 }
-void Freemodule(void *Libraryhandle)
+void Freemodule(void *Modulehandle)
 {
-    dlclose(Libraryhandle);
+    dlclose(Modulehandle);
 }
-void *Loadmodule(std::string Libraryname)
+void *Loadmodule(std::string_view Modulename)
 {
-    return dlopen(Libraryname.c_str(), RTLD_LAZY);
+    return dlopen(Modulename.data(), RTLD_LAZY);
 }
-void *Getfunction(void *Libraryhandle, std::string Functionname)
+void *Getfunction(void *Modulehandle, std::string_view Functionname)
 {
-    return dlsym(Libraryhandle, Functionname.c_str());
+    return dlsym(Modulehandle, Functionname.data());
 }
 
 #endif
