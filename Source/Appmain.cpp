@@ -27,6 +27,10 @@ BOOLEAN WINAPI DllMain(HINSTANCE hDllHandle, DWORD nReason, LPVOID Reserved)
 #else
 __attribute__((constructor)) void DllMain()
 {
+    std::string_view Environment = getenv("LINUX_HACK");
+    if(Environment.data()) return;
+    setenv("LINUX_HACK", "1", 0);
+    
     // Ensure that the logfile directory exists.
     mkdir("./Plugins/", S_IRWXU | S_IRWXG);
     mkdir("./Plugins/Logs/", S_IRUSR | S_IWUSR);

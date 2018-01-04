@@ -7,7 +7,7 @@
 #pragma once
 
 // Debug information logging.
-#if defined (NDEBUG)
+#if defined(NDEBUG)
     #define Printfunction()
     #define Debugprint(string)
 #else
