@@ -53,11 +53,11 @@ void Loadplugin(std::string_view Pluginname, std::string_view Fullpath)
         // Add a module to the global state.
         Freshplugins.push_back(Modulehandle);
         Loadedplugins[Pluginname] = Modulehandle;
-        Infoprint(va("Loaded plugin \"%s\".", Pluginname));
+        Infoprint(va("Loaded plugin \"%s\".", Pluginname.data()));
     }
     else
     {
-        Infoprint(va("Failed to load plugin \"%s\".", Pluginname));
+        Infoprint(va("Failed to load plugin \"%s\".", Pluginname.data()));
     }
 }
 
@@ -68,6 +68,7 @@ extern "C" EXPORT_ATTR void Finalizeplugins(bool Force)
     static bool Initialized = false;
     if(Initialized && !Force) return;
     Initialized = true;
+    Printfunction();
 
     for (auto &Item : Loadedplugins)
     {
@@ -133,6 +134,7 @@ void Loadallplugins()
     }
 
     // Sideload any developer plugin.
+    if(Fileexists("./Plugins/Developerplugin"))
     Loadplugin("Devplugin", "./Plugins/Developerplugin");
 
     // Initialize the new plugins.
