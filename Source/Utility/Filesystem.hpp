@@ -48,7 +48,7 @@ inline std::vector<std::string> Findfiles(std::string Searchpath, std::string_vi
     std::vector<std::string> Filenames{};
     WIN32_FIND_DATAA Filedata;
     HANDLE Filehandle;
-    
+
     // Append trailing slash, asterisk and extension.
     if (Searchpath.back() != '/') Searchpath.append("/");
     Searchpath.append("*");
@@ -59,7 +59,7 @@ inline std::vector<std::string> Findfiles(std::string Searchpath, std::string_vi
     if (Filehandle == (void *)ERROR_INVALID_HANDLE || Filehandle == (void *)INVALID_HANDLE_VALUE)
     {
         if(Filehandle) FindClose(Filehandle);
-        return false;
+        return std::move(Filenames);
     }
 
     do

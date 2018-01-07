@@ -33,3 +33,8 @@
 #if defined(_WIN64) || defined(__x86_64__) || defined(__ppc64__)
     #define ENVIRONMENT64
 #endif
+
+// Remove some Windows annoyance.
+#if defined(_WIN32)
+    #define _CRT_SECURE_NO_WARNINGS
+#endif

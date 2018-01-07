@@ -25,6 +25,7 @@
 #include <thread>
 #include <string>
 #include <mutex>
+#include <ctime>
 
 // Platformspecific libraries.
 #if defined(_WIN32)
