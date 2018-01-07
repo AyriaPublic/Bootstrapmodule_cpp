@@ -45,7 +45,7 @@ void InstallELFCallback()
             *(uint8_t *)(Entrypoint + 10) = 0xFF;                   // jmp rax
             *(uint8_t *)(Entrypoint + 11) = 0xE0;                   // --
         #else
-            *(uint8_t *)(Entrypoint + 0) = 0xE9;                    // jmp short Callack
+            *(uint8_t *)(Entrypoint + 0) = 0xE9;                    // jmp short Callback
             *(uint32_t *)(Entrypoint + 1) = ((uint32_t)Callback - (Entrypoint + 5));
         #endif
     }
@@ -54,6 +54,7 @@ void InstallELFCallback()
 void Restoreentrypoint()
 {
     if(!Entrypoint) return;
+    Printfunction();
 
     auto Protection = Memprotect::Unprotectrange((void *)Entrypoint, 20);
     {
@@ -61,8 +62,6 @@ void Restoreentrypoint()
         std::memcpy((void *)Entrypoint, Originaltext, 20);
     }
     Memprotect::Protectrange((void *)Entrypoint, 20, Protection);
-
-    Printfunction();
 }
 
 // The callback from the games entrypoint.
