@@ -2,8 +2,8 @@
     Initial author: Convery (tcn@ayria.se)
     Started: 22-12-2017
     License: MIT
-
-    Prints to the logfile and STDERR for debugging.
+    Notes:
+        Prints information to the logfile and console.
 */
 
 #pragma once
@@ -14,14 +14,14 @@
 namespace
 {
     #if !defined(MODULENAME)
-    #define MODULENAME "Invalid"
+        #define MODULENAME "Invalid"
     #endif
 
     constexpr const char *Filepath = "./Plugins/Logs/" MODULENAME ".log";
     static std::mutex Threadguard;
 }
 
-// Output to file.
+// Output to file, assumes nullterminated strings.
 inline void Logprint(std::string_view Message)
 {
     // Prevent multiple writes to the file.
@@ -40,8 +40,8 @@ inline void Logprint(std::string_view Message)
 
     // Duplicate the message to STDERR.
     #if !defined(NDEBUG)
-    std::fputs(Message.data(), stderr);
-    std::fputs("\n", stderr);
+        std::fputs(Message.data(), stderr);
+        std::fputs("\n", stderr);
     #endif
 }
 inline void Logprintasync(std::string Message)
@@ -49,23 +49,19 @@ inline void Logprintasync(std::string Message)
     std::thread([&](){ Logprint(Message);}).detach();
 }
 
-// Formatted output.
-inline void Logprefixed(std::string_view Message, std::string_view Prefix)
-{
-    Logprint(va("[%-8s] %s", Prefix.data(), Message.data()));
-}
-inline void Logtimestamped(std::string_view Message)
+// Formatted output, [Type][Time][Message]
+inline void Logformatted(std::string_view Message, char Prefix)
 {
     auto Now = std::time(NULL);
     char Buffer[80]{};
 
     std::strftime(Buffer, 80, "%H:%M:%S", std::localtime(&Now));
-    Logprefixed(Message, Buffer);
+    Logprint(va("[%c][%-8s] %*s", Prefix, Buffer, static_cast<int>(Message.size()), Message.data()));
 }
 
 // Delete the log and create a new one.
 inline void Clearlog()
 {
     std::remove(Filepath);
-    Logtimestamped(MODULENAME " - Starting up..");
+    Logformatted(MODULENAME " - Starting up..", 'I');
 }
