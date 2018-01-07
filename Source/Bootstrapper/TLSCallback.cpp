@@ -3,9 +3,8 @@
     Started: 26-12-2017
     License: MIT
     Notes:
-        TLS callbacks are intended to run before
-        main() and everytime a new thread is 
-        created. This is used by packers.
+        Temporarily removes the TLS callback to
+        prevent packers from messing with init.
 */
 
 #include "../Stdinclude.hpp"

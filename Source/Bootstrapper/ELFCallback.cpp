@@ -3,7 +3,7 @@
     Started: 28-12-2017
     License: MIT
     Notes:
-        ELF files hook libc rather than the app.
+        Hooks libc and initializes on the first call.
 */
 
 #include "../Stdinclude.hpp"

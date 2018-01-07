@@ -2,6 +2,8 @@
     Initial author: Convery (tcn@ayria.se)
     Started: 26-12-2017
     License: MIT
+    Notes:
+        Forward declarations for the bootstrapping.
 */
 
 #pragma once

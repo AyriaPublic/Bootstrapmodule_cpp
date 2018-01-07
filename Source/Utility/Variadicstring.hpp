@@ -2,8 +2,8 @@
     Initial author: Convery (tcn@ayria.se)
     Started: 22-12-2017
     License: MIT
-
-    Creates a readable string from variadic input.
+    Notes:
+        Creates a readable string from variadic input.
 */
 
 #pragma once

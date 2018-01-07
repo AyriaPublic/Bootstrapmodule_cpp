@@ -2,8 +2,8 @@
     Initial author: Convery (tcn@ayria.se)
     Started: 03-01-2018
     License: MIT
-
-    Simple filesystem IO.
+    Notes:
+        Provides basic filesystem-IO.
 */
 
 #pragma once

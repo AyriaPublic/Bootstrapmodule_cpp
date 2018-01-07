@@ -3,7 +3,7 @@
     Started: 28-12-2017
     License: MIT
     Notes:
-        Changes the pagepermissions for a range.
+        Changes the page-permissions for a range.
 */
 
 #pragma once

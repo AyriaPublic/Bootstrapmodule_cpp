@@ -2,8 +2,8 @@
     Initial author: Convery (tcn@ayria.se)
     Started: 22-12-2017
     License: MIT
-
-    Global configurations, defaults.
+    Notes:
+        Provides a global configuration, defaults.
 */
 
 #pragma once

@@ -2,8 +2,8 @@
     Initial author: Convery (tcn@ayria.se)
     Started: 03-01-2018
     License: MIT
-
-    Extracts plugins to /tmp/ and loads them.
+    Notes:
+        Extracts plugins to /tmp/ and loads them.
 */
 
 #include "../Stdinclude.hpp"

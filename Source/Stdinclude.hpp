@@ -2,8 +2,8 @@
     Initial author: Convery (tcn@ayria.se)
     Started: 22-12-2017
     License: MIT
-
-    A single header for all modules.
+    Notes:
+        Provides a single include-file for all modules.
 */
 
 #pragma once
