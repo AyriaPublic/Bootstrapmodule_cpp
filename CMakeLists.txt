@@ -3,6 +3,7 @@ project(Bootstrapmodule_cpp)
 
 # Use the latest standard at this time.
 set(CMAKE_CXX_STANDARD 17)
+enable_language(ASM_MASM)
 
 # Export to the a gitignored directory.
 set(EXECUTABLE_OUTPUT_PATH ${Bootstrapmodule_cpp_SOURCE_DIR}/Bin)
@@ -26,26 +27,34 @@ set(CMAKE_DEBUG_POSTFIX "d")
 
 # Just pull all the files from /Source
 file(GLOB_RECURSE SOURCES "Source/*.cpp")
+file(GLOB_RECURSE ASSEMBLY "Source/*.asm")
 
-# Build both versions of the bootstrapmodule.
-add_library(Nativebootstrap32 SHARED ${SOURCES})
-add_library(Nativebootstrap64 SHARED ${SOURCES})
-
-# Remove the 'lib' prefix for the files.
-set_target_properties(Nativebootstrap32 Nativebootstrap64 PROPERTIES PREFIX "")
+# Build the requested version without the 'lib' prefix.
+if(${CMAKE_SIZEOF_VOID_P} EQUAL 4)
+    add_library(Nativebootstrap32 SHARED ${SOURCES})
+    set_target_properties(Nativebootstrap32 PROPERTIES PREFIX "")
+else()
+    add_library(Nativebootstrap64 SHARED ${SOURCES} ${ASSEMBLY})
+    set_target_properties(Nativebootstrap64 PROPERTIES PREFIX "")
+endif()
 
 # Differentiate between x64 and x86 builds.
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-    set_target_properties(Nativebootstrap32 PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
-    set_target_properties(Nativebootstrap64 PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
+    if(${CMAKE_SIZEOF_VOID_P} EQUAL 4)
+        set_target_properties(Nativebootstrap32 PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+    else()
+        set_target_properties(Nativebootstrap64 PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
+    endif()
 endif()
 
 # Library dependencies for the platforms.
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-    target_link_libraries(Nativebootstrap32 dl pthread)
-    target_link_libraries(Nativebootstrap64 dl pthread)
+    if(${CMAKE_SIZEOF_VOID_P} EQUAL 4)
+        target_link_libraries(Nativebootstrap32 dl pthread)
+    else()
+        target_link_libraries(Nativebootstrap64 dl pthread)
+    endif()
 else()
-
 endif()
 
 # Use static VC runtimes when releasing on Windows.

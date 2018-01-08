@@ -24,6 +24,9 @@ BOOLEAN WINAPI DllMain(HINSTANCE hDllHandle, DWORD nReason, LPVOID Reserved)
     // Remove the TLS callback as it may cause issues.
     RemoveTLS();
 
+    // Start bootstrapping.
+    InstallPECallback();
+
     return TRUE;
 }
 #else
