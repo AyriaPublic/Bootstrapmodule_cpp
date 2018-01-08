@@ -22,7 +22,7 @@ inline std::string Readfile(std::string Path)
     std::fread(Buffer.get(), Length, 1, Filehandle);
     std::fclose(Filehandle);
 
-    return std::move(Buffer.get());
+    return std::string(std::move(Buffer.get()), Length);
 }
 inline bool Writefile(std::string Path, std::string Buffer)
 {

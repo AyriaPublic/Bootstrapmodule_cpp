@@ -115,7 +115,13 @@ void Loadallplugins()
     // Extract and load the plugins.
     for(auto &Item : Pluginnames)
     {
-        miniz_cpp::zip_file Archive("./Plugins/" + Item);
+        // If the length is 0, skip.
+        auto Filebuffer = Readfile("./Plugins/" + Item);
+        if (0 == Filebuffer.size()) continue;
+
+        // Reuse the already read buffer.
+        std::vector<unsigned char> Archivebuffer{ Filebuffer.begin(), Filebuffer.end() };
+        miniz_cpp::zip_file Archive(Archivebuffer);
         for(auto &Entry : Archive.namelist())
         {
             if(std::strstr(Entry.c_str(), Pluignextension))
