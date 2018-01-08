@@ -41,9 +41,9 @@ endif()
 # Differentiate between x64 and x86 builds.
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
     if(${CMAKE_SIZEOF_VOID_P} EQUAL 4)
-        set_target_properties(Nativebootstrap32 PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
+        set_target_properties(Nativebootstrap32 PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32 -static-libgcc -static-libstdc++")
     else()
-        set_target_properties(Nativebootstrap64 PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
+        set_target_properties(Nativebootstrap64 PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64 -static-libgcc -static-libstdc++")
     endif()
 endif()
 
