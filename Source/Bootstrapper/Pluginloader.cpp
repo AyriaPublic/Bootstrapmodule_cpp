@@ -140,8 +140,13 @@ void Loadallplugins()
     }
 
     // Sideload any developer plugin.
-    if(Fileexists("./Plugins/Developerplugin"))
-    Loadplugin("Devplugin", "./Plugins/Developerplugin");
+#if defined(_WIN32)
+    if(Fileexists("./Plugins/Developerplugin.dll"))
+        Loadplugin("Devplugin", "./Plugins/Developerplugin");
+#else
+    if(Fileexists("./Plugins/Developerplugin.so"))
+        Loadplugin("Devplugin", "./Plugins/Developerplugin");
+#endif
 
     // Initialize the new plugins.
     Initializeplugins();
