@@ -1,5 +1,5 @@
-; Visual Studio doesn't support inline x64 assembly, so this file is needed.
-; SSE does some strange stack tricks on x64 as well, so we need to align it.
+; Visual Studio / CL doesn't support inline x64 assembly, so this file is needed.
+; This is because a lot of games need some stack-alignment.
 
 _TEXT SEGMENT
 

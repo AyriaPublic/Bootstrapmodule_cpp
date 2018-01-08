@@ -1,57 +1,50 @@
 /*
     Initial author: Convery (tcn@ayria.se)
-    Started: 29-07-2017
+    Started: 22-12-2017
     License: MIT
     Notes:
-        Module entrypoint.
+        Provides the entrypoint for Windows and Nix.
 */
 
-#include "Stdinclude.h"
+#include "Stdinclude.hpp"
 
-// Delete the last sessions log on startup for windows.
-#if defined (_WIN32)
-    namespace { struct Deletelog { Deletelog() { Clearlog(); } }; static Deletelog Deleted{}; }
-#endif
-
-// Ensure that we have directories for the plugins.
-#if defined (_WIN32)
-    namespace {
-        struct Startupfolders {
-            Startupfolders()
-            {
-                _mkdir("./Plugins");
-                _mkdir("./Plugins/Logs");
-            }
-        };
-        static Startupfolders Loader{};
-    }
-#else
-    namespace {
-        struct Startupfolders {
-            Startupfolders()
-            {
-                mkdir("./Plugins");
-                mkdir("./Plugins/Logs");
-            }
-        };
-        static Startupfolders Loader{};
-    }
-#endif
-
-// Default entrypoint for windows.
-#if defined (_WIN32)
+#if defined _WIN32
 BOOLEAN WINAPI DllMain(HINSTANCE hDllHandle, DWORD nReason, LPVOID Reserved)
 {
-    switch (nReason)
-    {
-        case DLL_PROCESS_ATTACH:
-        {
-            // Rather not handle all thread updates.
-            DisableThreadLibraryCalls(hDllHandle);
-            break;
-        }
-    }
+    // Opt-out of further thread notifications.
+    DisableThreadLibraryCalls(hDllHandle);
+
+    // Ensure that the logfile directory exists.
+    _mkdir("./Plugins/");
+    _mkdir("./Plugins/Logs/");
+
+    // Clear the previous sessions logfile.
+    Clearlog();
+
+    // Remove the TLS callback as it may cause issues.
+    RemoveTLS();
+
+    // Start bootstrapping.
+    InstallPECallback();
 
     return TRUE;
+}
+#else
+__attribute__((constructor)) void DllMain()
+{
+    // Ensure that DllMain is only called once.
+    std::string_view Environment = getenv("LINUX_HACK");
+    if(Environment.data()) return;
+    setenv("LINUX_HACK", "1", 0);
+
+    // Ensure that the logfile directory exists.
+    mkdir("./Plugins/", S_IRWXU | S_IRWXG);
+    mkdir("./Plugins/Logs/", S_IRUSR | S_IWUSR);
+
+    // Clear the previous sessions logfile.
+    Clearlog();
+
+    // Start bootstrapping.
+    InstallELFCallback();
 }
 #endif

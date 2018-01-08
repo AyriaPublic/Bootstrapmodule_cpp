@@ -1,28 +1,22 @@
 /*
     Initial author: Convery (tcn@ayria.se)
-    Started: 03-08-2017
+    Started: 08-01-2018
     License: MIT
     Notes:
-        Inserts a hook on the games entrypoint.
-        PE hooks the entrypoint to support .NET.
+        Hooks the games entrypoint and jumps back to it.
 */
 
-#include "../Stdinclude.h"
+#include "../Stdinclude.hpp"
 
-#if defined (_WIN32)
+#if defined(_WIN32)
 
-// Global scope to be accessible from ASM.
+extern "C" void Resumeprogram();
 extern "C" size_t Entrypoint{};
 uint8_t Originaltext[20]{};
 void Callback();
 
-// Access to external modules.
-extern "C" void Resumeprogram();
-extern void Loadallplugins();
-extern void RestoreTLS();
-
-// Get the games entrypoint.
-size_t Getentrypoint()
+// PE file properties.
+size_t GetPEEntrypoint()
 {
     // Module(NULL) gets the host application.
     HMODULE Modulehandle = GetModuleHandleA(NULL);
@@ -35,13 +29,13 @@ size_t Getentrypoint()
     return (size_t)((DWORD_PTR)Modulehandle + NTHeader->OptionalHeader.AddressOfEntryPoint);
 }
 
-// Overwrite and restore the entrypoint.
-void Removeentrypoint()
+// Bootstrapping.
+void InstallPECallback()
 {
     Printfunction();
 
-    Entrypoint = Getentrypoint();
-    if(!Entrypoint) return;
+    Entrypoint = GetPEEntrypoint();
+    if (!Entrypoint) return;
 
     auto Protection = Memprotect::Unprotectrange((void *)Entrypoint, 20);
     {
@@ -49,14 +43,14 @@ void Removeentrypoint()
         std::memcpy(Originaltext, (void *)Entrypoint, 20);
 
         // Per architecture patching.
-        #if defined (ENVIRONMENT64)
-            *(uint8_t *)(Entrypoint + 0) = 0x48;                   // mov
-            *(uint8_t *)(Entrypoint + 1) = 0xB8;                   // rax
-            *(uint64_t *)(Entrypoint + 2) = (uint64_t)Callback;    // Address
-            *(uint8_t *)(Entrypoint + 10) = 0xFF;                  // jmp reg
-            *(uint8_t *)(Entrypoint + 11) = 0xE0;                  // rax
+        #if defined(ENVIRONMENT64)
+            *(uint8_t *)(Entrypoint + 0) = 0x48;                    // mov rax, Callback
+            *(uint8_t *)(Entrypoint + 1) = 0xB8;                    // --
+            *(uint64_t *)(Entrypoint + 2) = (uint64_t)Callback;     // --
+            *(uint8_t *)(Entrypoint + 10) = 0xFF;                   // jmp rax
+            *(uint8_t *)(Entrypoint + 11) = 0xE0;                   // --
         #else
-            *(uint8_t *)(Entrypoint + 0) = 0xE9;                   // jmp
+            *(uint8_t *)(Entrypoint + 0) = 0xE9;                    // jmp short Callback
             *(uint32_t *)(Entrypoint + 1) = ((uint32_t)Callback - (Entrypoint + 5));
         #endif
     }
@@ -64,8 +58,8 @@ void Removeentrypoint()
 }
 void Restoreentrypoint()
 {
+    if (!Entrypoint) return;
     Printfunction();
-    if(!Entrypoint) return;
 
     auto Protection = Memprotect::Unprotectrange((void *)Entrypoint, 20);
     {
@@ -75,21 +69,6 @@ void Restoreentrypoint()
     Memprotect::Protectrange((void *)Entrypoint, 20, Protection);
 }
 
-// Windows x64 defines this in a .asm file.
-#if !defined (ENVIRONMENT64)
-extern "C" void Resumeprogram()
-{
-    Printfunction();
-
-    // Clang and CL does not want to cooperate here.
-    #if defined (__clang__)
-        *((size_t*)__builtin_frame_address(0) + 1) = Entrypoint;
-    #else
-        *(size_t *)_AddressOfReturnAddress() = Entrypoint;
-    #endif
-}
-#endif
-
 // The callback from the games entrypoint.
 void Callback()
 {
@@ -97,7 +76,6 @@ void Callback()
 
     // Remove our hackery.
     Restoreentrypoint();
-    RestoreTLS();
 
     // Do what we came here for.
     Loadallplugins();
@@ -106,7 +84,19 @@ void Callback()
     Resumeprogram();
 }
 
-// Install the hook on startup.
-namespace { struct Overwriteentrypoint { Overwriteentrypoint() { Removeentrypoint(); }; }; static Overwriteentrypoint Loader{}; }
+// CL x64 does not support inline assembly so this is defined in win64resume.asm
+#if !defined(ENVIRONMENT64)
+extern "C" void Resumeprogram()
+{
+    Printfunction();
+
+    // Clang and CL implements this differently, bug?
+    #if defined (__clang__)
+        *((size_t*)__builtin_frame_address(0) + 1) = Entrypoint;
+    #else
+        *(size_t *)_AddressOfReturnAddress() = Entrypoint;
+    #endif
+}
+#endif
 
 #endif

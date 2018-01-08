@@ -1,18 +1,14 @@
 /*
     Initial author: Convery (tcn@ayria.se)
-    Started: 07-08-2017
+    Started: 03-01-2018
     License: MIT
     Notes:
-        [Insert some line about how this is a utility for
-        new developers to get up and running quickly; not
-        just me being too lazy to use stdio             ]
+        Provides basic filesystem-IO.
 */
 
 #pragma once
+#include "../Stdinclude.hpp"
 
-#include "../../Stdinclude.h"
-
-// Open a file on disk and do IO.
 inline std::string Readfile(std::string Path)
 {
     std::FILE *Filehandle = std::fopen(Path.c_str(), "rb");
@@ -26,7 +22,7 @@ inline std::string Readfile(std::string Path)
     std::fread(Buffer.get(), Length, 1, Filehandle);
     std::fclose(Filehandle);
 
-    return std::string(Buffer.get(), Length);
+    return std::string(std::move(Buffer.get()), Length);
 }
 inline bool Writefile(std::string Path, std::string Buffer)
 {
@@ -45,57 +41,11 @@ inline bool Fileexists(std::string Path)
     return true;
 }
 
-// Open a pipe and do IO.
-inline std::string Readpipe(std::string Path)
-{
-    #if defined(_WIN32)
-    std::FILE *Pipehandle = _popen(Path.c_str(), "rt");
-    if (!Pipehandle) return "";
-    #else
-    std::FILE *Pipehandle = popen(Path.c_str(), "rt");
-    if (!Pipehandle) return "";
-    #endif
-
-    std::string Result;
-    auto Buffer = std::make_unique<char[]>(2048);
-    while (std::fgets(Buffer.get(), 2048, Pipehandle))
-    {
-        Result += Buffer.get();
-    }
-
-    #if defined(_WIN32)
-    _pclose(Pipehandle);
-    #else
-    pclose(Pipehandle);
-    #endif
-
-    return Result;
-}
-inline bool Writepipe(std::string Path, std::string Buffer)
-{
-    #if defined(_WIN32)
-    std::FILE *Pipehandle = _popen(Path.c_str(), "wt");
-    if (!Pipehandle) return false;
-    #else
-    std::FILE *Pipehandle = popen(Path.c_str(), "wt");
-    if (!Pipehandle) return false;
-    #endif
-
-    std::fputs(Buffer.c_str(), Pipehandle);
-
-    #if defined(_WIN32)
-    _pclose(Pipehandle);
-    #else
-    pclose(Pipehandle);
-    #endif
-
-    return true;
-}
-
 // List all files in a directory.
-#if defined (_WIN32)
-inline bool Findfiles(std::string Searchpath, std::vector<std::string> *Filenames, std::string Extension)
+#if defined(_WIN32)
+inline std::vector<std::string> Findfiles(std::string Searchpath, std::string_view Extension)
 {
+    std::vector<std::string> Filenames{};
     WIN32_FIND_DATAA Filedata;
     HANDLE Filehandle;
 
@@ -109,7 +59,7 @@ inline bool Findfiles(std::string Searchpath, std::vector<std::string> *Filename
     if (Filehandle == (void *)ERROR_INVALID_HANDLE || Filehandle == (void *)INVALID_HANDLE_VALUE)
     {
         if(Filehandle) FindClose(Filehandle);
-        return false;
+        return std::move(Filenames);
     }
 
     do
@@ -120,17 +70,17 @@ inline bool Findfiles(std::string Searchpath, std::vector<std::string> *Filename
 
         // Add the file to the list.
         if (!(Filedata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-            Filenames->push_back(Filedata.cFileName);
+            Filenames.push_back(Filedata.cFileName);
 
     } while (FindNextFileA(Filehandle, &Filedata));
 
     FindClose(Filehandle);
-    return !!Filenames->size();
+    return std::move(Filenames);
 }
-
 #else
-inline bool Findfiles(std::string Searchpath, std::vector<std::string> *Filenames, std::string Extension)
+inline std::vector<std::string> Findfiles(std::string Searchpath, std::string_view Extension)
 {
+    std::vector<std::string> Filenames{};
     struct stat Fileinfo;
     dirent *Filedata;
     DIR *Filehandle;
@@ -150,14 +100,13 @@ inline bool Findfiles(std::string Searchpath, std::vector<std::string> *Filename
         // Add the file to the list.
         if (!(Fileinfo.st_mode & S_IFDIR))
             if (!Extension.size())
-                Filenames->push_back(Filedata->d_name);
+                Filenames.push_back(Filedata->d_name);
             else
-                if (std::strstr(Filedata->d_name, Extension.c_str())
-                    Filenames->push_back(Filedata->d_name);
+                if (std::strstr(Filedata->d_name, Extension.data()))
+                    Filenames.push_back(Filedata->d_name);
     }
     closedir(Filehandle);
 
-    return !!Filenames->size();
+    return std::move(Filenames);
 }
-
 #endif
