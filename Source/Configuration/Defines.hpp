@@ -7,6 +7,7 @@
 */
 
 #pragma once
+#pragma warning(disable: 4100)
 
 // Identifying name for this module.
 #define MODULENAME "Nativebootstrap"
