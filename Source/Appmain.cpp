@@ -11,21 +11,27 @@
 #if defined _WIN32
 BOOLEAN WINAPI DllMain(HINSTANCE hDllHandle, DWORD nReason, LPVOID Reserved)
 {
-    // Opt-out of further thread notifications.
-    DisableThreadLibraryCalls(hDllHandle);
+    switch (nReason)
+    {
+        case DLL_PROCESS_ATTACH:
+        {
+            // Opt-out of further thread notifications.
+            DisableThreadLibraryCalls(hDllHandle);
 
-    // Ensure that the logfile directory exists.
-    _mkdir("./Plugins/");
-    _mkdir("./Plugins/Logs/");
+            // Ensure that the logfile directory exists.
+            _mkdir("./Plugins/");
+            _mkdir("./Plugins/Logs/");
 
-    // Clear the previous sessions logfile.
-    Clearlog();
+            // Clear the previous sessions logfile.
+            Clearlog();
 
-    // Remove the TLS callback as it may cause issues.
-    RemoveTLS();
+            // Remove the TLS callback as it may cause issues.
+            RemoveTLS();
 
-    // Start bootstrapping.
-    InstallPECallback();
+            // Start bootstrapping.
+            InstallPECallback();
+        }
+    }
 
     return TRUE;
 }
