@@ -1,5 +1,6 @@
 ; Visual Studio / CL doesn't support inline x64 assembly, so this file is needed.
 ; This is because a lot of games need some stack-alignment.
+; -- Convery (tcn@hedgehogscience.com)
 
 _TEXT SEGMENT
 
