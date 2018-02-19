@@ -38,8 +38,12 @@ void RemoveTLS()
     auto Callback = *(size_t *)Address;
     if(!Callback) return;
 
-    TLSBackup = Callback;
-    *(size_t *)Address = 0;
+    auto Protection = Memprotect::Unprotectrange((void *)Address, 8);
+    {
+        TLSBackup = Callback;
+        *(size_t *)Address = 0;
+    }
+    Memprotect::Protectrange((void *)Address, 8, Protection);
 }
 void RestoreTLS()
 {
@@ -48,8 +52,13 @@ void RestoreTLS()
     auto Address = GetTLSCallbackaddress();
     if(!Address) return;
 
+    auto Protection = Memprotect::Unprotectrange((void *)Address, 8);
+    {
+        *(size_t *)Address = TLSBackup;
+    }
+    Memprotect::Protectrange((void *)Address, 8, Protection);
+
     // Create a new thread to invoke TLS.
-    *(size_t *)Address = TLSBackup;
     std::thread([]() { return 0; }).detach();
 }
 
